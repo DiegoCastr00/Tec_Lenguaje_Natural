@@ -1,0 +1,15 @@
+Inteligencia artificial general (AGI)
+Esta categoría -Artificial General Intelligence- se alcanza cuando una máquina adquiere capacidades cognitivas a nivel humano.
+Es decir, cuando puede realizar cualquier tarea intelectual que realiza una persona.
+También se la conoce como "IA fuerte".
+Es tal la creencia de que estamos al borde de alcanzar este nivel de desarrollo, que en marzo pasado más de 1.000 expertos en tecnología pidieron a las empresas de IA que dejen de entrenar, por al menos seis meses, a aquellos programas que sean más poderosos que GPT-4, la versión más reciente de ChatGPT.
+"Los sistemas de IA con inteligencia que compite con la humana pueden plantear profundos riesgos para la sociedad y la humanidad", advirtieron en una carta abierta, entre otros, el cofundador de Apple, Steve Wozniak, y el dueño de Tesla, SpaceX, Neuralink y Twitter, Elon Musk (quien fue uno de los cofundadores de Open AI antes de renunciar de la junta por desacuerdos con la conducción de la compañía).
+La carta en la que más de 1.000 expertos piden frenar la inteligencia artificial por ser una "amenaza para la humanidad"
+En la carta, publicada por la organización sin fines de lucro Future of Life Institute, los expertos dijeron que si las empresas no acceden rápidamente a frenar sus proyectos "los gobiernos deberían intervenir e instituir una moratoria" para que se puedan diseñar e implementar medidas de seguridad sólidas.
+Aunque esto es algo que -por el momento- no ha ocurrido, el gobierno de Estados Unidos sí convocó a los dueños de las principales empresas de IA - Alphabet, Anthropic, Microsoft, y OpenAI- para acordar "nuevas acciones para promover la innovación responsable de IA".
+"La IA es una de las tecnologías más poderosas de nuestro tiempo, pero para aprovechar las oportunidades que presenta, primero debemos mitigar sus riesgos", declaró a través de un comunicado la Casa Blanca el pasado 4 de mayo.
+El Congreso de EE.UU., por su parte, convocó este martes al CEO de OpenAI, Sam Altman, a responder preguntas sobre ChatGPT.
+Durante la audiencia en el Senado, Altman dijo que es "crucial" que su industria sea regulada por el gobierno a medida que la IA se vuelve "cada vez más poderosa".
+Carlos Ignacio Gutiérrez, investigador de políticas públicas en el Future of Life Institute, explicó a BBC Mundo que uno de los grandes desafíos que presenta la IA es que "no existe un cuerpo colegiado de expertos que deciden cómo regularlo, como ocurre, por ejemplo, con el Panel Intergubernamental sobre Cambio Climático (IPCC)".
+En la carta de los expertos, estos definieron cuáles eran sus principales preocupaciones.
+"¿Deberíamos desarrollar mentes no humanas que eventualmente podrían superarnos en número, ser más inteligentes, hacernos obsoletos y reemplazarnos?", cuestionaron.
