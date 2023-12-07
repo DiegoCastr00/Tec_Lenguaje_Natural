@@ -1,11 +1,18 @@
+'''#instalaciones requeridas para el programa
+!pip install nltk
+import nltk
+nltk.download('stopwords')
+nltk.download('punkt')
+#recursos para emplearse
+'''
+
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from string import punctuation
 import operator
-import math 
+import math
 import re
-import numpy as np 
-
+import numpy as np
 stop_words = set(stopwords.words('spanish') + list(punctuation))
 from nltk.stem.porter import PorterStemmer
 ps = PorterStemmer()
@@ -19,20 +26,16 @@ def getFile(fname):
         print(f"Error reading the file: {e}")
         return None
 
-        
+
 def clean2(textoTokenizado):
     newTokens = []
     for token in textoTokenizado:
-        pattern = r"[^a-zA-Z0-9 \n.,()áéóíúÁÉÍÓÚ]"
-
+        pattern = r"[^a-zA-Z0-9 \n.,()¿?¡!ÑñáéóíúÁÉÍÓÚ]"
         stripped = re.sub(pattern, "", token)
-
-        # Eliminar más de un espacio junto 
+        # Eliminar más de un espacio junto
         stripped = ' '.join(stripped.split())
-
-        # Quitar espacios de inicio y fin 
+        # Quitar espacios de inicio y fin
         stripped = stripped.strip()
-        
         newTokens.append(stripped)
     return newTokens
 
@@ -41,14 +44,14 @@ def clean(textoTokenizado):
     for token in textoTokenizado:
         pattern = r"[^a-zA-Z0-9 \n]"
         stripped = re.sub(pattern, "", token)
-        # Eliminar más de un espacio junto 
+        # Eliminar más de un espacio junto
         stripped = ' '.join(stripped.split())
-        # Quitar espacios de inicio y fin 
+        # Quitar espacios de inicio y fin
         stripped = stripped.strip()
         newTokens.append(stripped)
     return newTokens
 
-def global_frequency(txtClean):
+def freqToken(txtClean):
     freq_table = {}
     text = ' '.join(txtClean)
     #tokenizacion de palabras
@@ -63,17 +66,16 @@ def global_frequency(txtClean):
             if word in freq_table:
                 freq_table[word] += 1
             else:
-                freq_table[word] = 1  
-    print(freq_table)            
+                freq_table[word] = 1
     return freq_table
 
-def get_keywords(txtClean, n):
-    #
-    freq_table = global_frequency(txtClean)
-    freq_table_sorted = sorted(freq_table.items(), key = operator.itemgetter(1), reverse = False) 
-    #print(freq_table_sorted)
+def leastFreq(txtClean, n):
+    freq_table = freqToken(txtClean)
+    #se ordena la tabla de palabras frecuentes de menor a mayor
+    freq_table_sorted = sorted(freq_table.items(), key = operator.itemgetter(1), reverse = False)
     keywords = []
-    for i in range(0, n):  #taking first 5 most frequent words
+    #Se toman las palabras menos frecuentes globalmente
+    for i in range(0, n):
         keywords.append(freq_table_sorted[i][0])
     return keywords
 
@@ -97,7 +99,7 @@ def frequency(sentences):
         A[i, 1] = {}
         #TF de palabra en oracion
         A[i, 2] = {}
-        
+
         words = word_tokenize(sent)
         for word in words:
             word = word.lower()
@@ -107,10 +109,10 @@ def frequency(sentences):
                      A[i, 1][word] += 1
                 else:
                      A[i, 1][word] = 1
-    
+
         for word, freq in  A[i, 1].items():
              A[i, 2][word] = freq / count
-    
+
     #se calcula el idf
     for i, sent in enumerate(sentences, start=1):
         A[i, 3] = {}
@@ -124,39 +126,43 @@ def frequency(sentences):
         A[i, 4] = {}
         for word in A[i, 2]:
             A[i, 4][word] = A[i, 2][word] * A[i, 3][word]
-            
+
     return A
 
-def weigh_keywords2(txtClean, A, n):
-    keywords = get_keywords(txtClean, n)
+def moreImportance(txtClean, A, n):
+    #Se les da más peso a las palabras menos frecuentes para asegurarnos que esten en el resumen 
+    keywords = leastFreq(txtClean, n)
     for i in range(1, A.shape[0]):
         for word in A[i, 4]:
             if word in keywords:
                 A[i, 4][word] =  A[i, 4][word] * 2
     return A
 
-def get_sent_score2(A):
+def sumSentence(A):
     for i in range(1, A.shape[0]):
         A[i, 5] = 0
         for word in A[i, 4]:
             A[i, 5] =  A[i, 5] + A[i, 4][word]
     return A
 
-def get_summary2(oraciones, A):
+def getResumen(oraciones, A):
     summary = []
     prom = np.mean(A[1:, 5])
+    #solo las oraciones con puntacion mayor al promedio van al resumen
     for i in range(1, A.shape[0]):
         if A[i, 5] > prom:
             summary.append(oraciones[i-1])
     summary = ' '.join(summary)
     return summary
 
+
 import pandas as pd
 def getDF(diccionario1, diccionario2, diccionario3):
+    #se unen los diccionarios con las medidas para cada oracion 
     df1 = pd.DataFrame(list(diccionario1.items()), columns=['Palabra', 'TF'])
     df2 = pd.DataFrame(list(diccionario2.items()), columns=['Palabra', 'IDF'])
     df3 = pd.DataFrame(list(diccionario3.items()), columns=['Palabra', 'TF-IDF'])
-    
+
     df_final = pd.merge(df1, df2, on='Palabra')
     df_final = pd.merge(df_final, df3, on='Palabra')
     return df_final
@@ -164,46 +170,78 @@ def getDF(diccionario1, diccionario2, diccionario3):
 def getDFglobal(A):
     # Lista para almacenar DataFrames individuales
     dfs = []
-    
+
     for i in range(1, A.shape[0]):
-        # Obtener DataFrames individuales y añadir la columna 'i'
+        # Obtener DataFrames individuales y añadir a que oracion pertenecen 
         df = getDF(A[i,2], A[i,3], A[i,4])
         df.insert(0, 'Oración', i)
         dfs.append(df)
-    
-    # Concatenar todos los DataFrames en uno solo sin restablecer el índice
-    df_global = pd.concat(dfs, ignore_index=False)
-    
-    # Establecer 'Oración' como el índice
-    df_global.set_index('Oración', inplace=True)
-    
-    latex_code = df.to_latex(index=False)
 
-# Imprimir o guardar el código LaTeX
-    print(latex_code)
+    # Concatenar todos los DataFrames 
+    df_global = pd.concat(dfs, ignore_index=False)
+    df_global.set_index('Oración', inplace=True)
     # Mostrar el DataFrame resultante
     display(df_global)
-        
+
 def resumir(file, n):
     texto = getFile(file)
-    print(len(texto))
     for i in range(0, n):
         textoTokenizado = sent_tokenize(texto)
         clean1 = clean2(textoTokenizado)
         txtClean = clean(clean1)
         datos = frequency(txtClean)
-        datos_modificados = weigh_keywords2(txtClean, datos, 7)
-        sentence_info = get_sent_score2(datos_modificados)
+        datos_modificados = moreImportance(txtClean, datos, 7)
+        sentence_info = sumSentence(datos_modificados)
         getDFglobal(sentence_info)
-        summary = get_summary2(textoTokenizado, sentence_info)
-        print(len(summary))
+        summary = getResumen(textoTokenizado, sentence_info)
+        print('txt', len(texto))
+        print('sum', len(summary))
         texto = summary
+        print(summary)
     return summary
 
+def resumirF(texto, n):
+    for i in range(0, n):
+        textoTokenizado = sent_tokenize(texto)
+        clean1 = clean2(textoTokenizado)
+        txtClean = clean(clean1)
+        datos = frequency(txtClean)
+        datos_modificados = moreImportance(txtClean, datos, 7)
+        sentence_info = sumSentence(datos_modificados)
+        summary = getResumen(textoTokenizado, sentence_info)
+        print('txt', len(texto))
+        print('sum', len(summary))
+        print(summary)
+        texto = summary
+
+def main (text1, text2, text3, text4, text5):
+    print('Resumen 1:')
+    summary1 = resumir (text1,1)
+    print('Resumen 2:')
+    summary2 = resumir (text2,1)
+    print('Resumen 3:')
+    summary3 = resumir (text3,1)
+    print('Resumen 4:')
+    summary4 = resumir (text4,1)
+    print('Resumen 5:')
+    summary5 = resumir (text5,1)
+
+    texto1 = getFile(text1)
+    texto2 = getFile(text2)
+    texto3 = getFile(text3)
+    texto4 = getFile(text4)
+    texto5 = getFile(text5)
+    textos = [texto1,texto2, texto3, texto4, texto5]
+    resultado = "\n". join(textos)
+    print( )
+    print('Resumen Final')
+    resumirF(resultado,1)
 
 
+texto1 = 'texto.txt'
+texto2 = 'texto1.txt'
+texto3 = 'texto2.txt'
+texto4 = 'texto3.txt'
+texto5 = 'texto4.txt'
 
-resumen = resumir('texto.txt', 1)
-
-print(resumen)
-
+main(texto1,texto2,texto3,texto4,texto5)
